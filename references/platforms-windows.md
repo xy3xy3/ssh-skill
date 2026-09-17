@@ -3,10 +3,15 @@
 Use PowerShell or the Codex/Claude Code process runner. Resolve
 `<SSH_SKILL_ROOT>` from the loaded skill before invoking Python.
 
+Use `.venv\\Scripts\\python.exe` for the CLI. Prefer `uv venv .venv` and
+`uv pip install --python .venv\\Scripts\\python.exe paramiko`; otherwise use
+`python -m venv .venv` and `.venv\\Scripts\\python.exe -m pip install paramiko`.
+Never use a bare global `pip`.
+
 ```powershell
-python "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" doctor --json
-python "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" exec example-host "hostname"
-python "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" upload example-host "C:\Temp\app.zip" "/tmp/app.zip"
+.venv\Scripts\python.exe "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" doctor --json
+.venv\Scripts\python.exe "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" exec example-host "hostname"
+.venv\Scripts\python.exe "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" upload example-host "C:\Temp\app.zip" "/tmp/app.zip"
 ```
 
 - Use Windows path syntax only for local paths and the script path.

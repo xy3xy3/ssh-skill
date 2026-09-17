@@ -48,6 +48,9 @@ DO NOT use for:
    completed multi-host operations without new evidence and user intent.
 7. Never expose passwords, private-key content, tokens, or askpass data.
 8. Preview multi-host and irreversible operations before applying them.
+9. Keep Python and third-party packages isolated in a project-local virtual
+   environment. Never install packages into the system interpreter or user
+   site with a bare `pip` command.
 
 ## Resolve The Skill Root Once
 
@@ -84,11 +87,34 @@ the result indicates that one of them is necessary.
 
 ## Invocation Contract
 
-Use the platform-appropriate Python executable and path syntax:
+Use the Python executable from the project's virtual environment and the
+platform-appropriate path syntax. Prefer `uv`; if it is unavailable, use
+Python's built-in `venv`:
 
 ```text
-<PYTHON> "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" <operation> <arguments>
+uv venv .venv
+uv pip install --python <VENV_PYTHON> paramiko
 ```
+
+If `uv` is unavailable:
+
+```text
+<SYSTEM_PYTHON> -m venv .venv
+<VENV_PYTHON> -m pip install paramiko
+```
+
+Resolve `<VENV_PYTHON>` as `.venv/bin/python` on macOS/Linux and
+`.venv\\Scripts\\python.exe` on Windows. Use the environment's interpreter
+for every subsequent command, without requiring shell activation:
+
+```text
+<VENV_PYTHON> "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" <operation> <arguments>
+```
+
+Run `doctor --json` after creating or selecting the environment. If `uv` and
+`venv` are both unavailable, report the prerequisite instead of falling back
+to global `pip`. Only install missing dependencies after the user authorizes
+installation.
 
 - Keep remote paths in POSIX form, such as `/var/log/app.log`.
 - Keep the entire remote command as one argument.

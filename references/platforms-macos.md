@@ -2,10 +2,15 @@
 
 Resolve `<SSH_SKILL_ROOT>` from the loaded skill, then use the local POSIX path.
 
+Use `.venv/bin/python` for the CLI. Prefer `uv venv .venv` and
+`uv pip install --python .venv/bin/python paramiko`; otherwise use
+`python3 -m venv .venv` and `.venv/bin/python -m pip install paramiko`.
+Never use a bare global `pip`.
+
 ```bash
-python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" doctor --json
-python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" exec example-host "hostname"
-python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" download example-host "/var/log/app.log" "./app.log"
+.venv/bin/python "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" doctor --json
+.venv/bin/python "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" exec example-host "hostname"
+.venv/bin/python "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" download example-host "/var/log/app.log" "./app.log"
 ```
 
 - The runtime prefers `/usr/bin/ssh` and falls back to PATH discovery.

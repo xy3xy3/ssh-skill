@@ -39,6 +39,33 @@ Python CLI 封装远程命令、文件传输、服务器间传输、批量操作
 v4.0.0 发布基线为 115 项离线测试，并由 GitHub Actions 在 Windows、macOS、
 Ubuntu 及 Python 3.10-3.13 上验证。
 
+## Python 环境与依赖
+
+必须使用项目本地虚拟环境，避免污染系统 Python 或用户级 Python 包。优先
+使用 `uv`：
+
+```bash
+uv venv .venv
+uv pip install --python .venv/bin/python paramiko
+```
+
+没有 `uv` 时使用 Python 内置 `venv`：
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install paramiko
+```
+
+Windows 将解释器路径替换为 `.venv\\Scripts\\python.exe`。后续命令都使用
+该虚拟环境中的解释器，例如：
+
+```bash
+.venv/bin/python scripts/ssh_skill.py doctor --json
+```
+
+不要执行裸 `pip install`，也不要把依赖安装到全局环境；如果 `uv` 和
+`venv` 都不可用，应报告前置条件并停止安装。
+
 ## Skill 路径
 
 以当前 AI 实际加载的 [SKILL.md](SKILL.md) 所在目录为
@@ -59,15 +86,15 @@ Ubuntu 及 Python 3.10-3.13 上验证。
 Windows PowerShell：
 
 ```powershell
-python "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" doctor --json
-python "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" exec example-host "hostname"
+.venv\Scripts\python.exe "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" doctor --json
+.venv\Scripts\python.exe "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" exec example-host "hostname"
 ```
 
 macOS / Linux：
 
 ```bash
-python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" doctor --json
-python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" exec example-host "hostname"
+.venv/bin/python "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" doctor --json
+.venv/bin/python "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" exec example-host "hostname"
 ```
 
 远程路径在三个系统上都保持 POSIX 格式。不要增加本地 Shell 包装层。
@@ -77,13 +104,13 @@ python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" exec example-host "hostname"
 以下示例假设当前目录就是源码根目录：
 
 ```text
-python scripts/ssh_skill.py doctor --json
-python scripts/ssh_skill.py config list-servers
-python scripts/ssh_skill.py exec example-host "uname -a"
-python scripts/ssh_skill.py upload example-host ./app.tar.gz /tmp/app.tar.gz
-python scripts/ssh_skill.py download example-host /var/log/app.log ./app.log
-python scripts/ssh_skill.py transfer source-host /data/file destination-host /backup/file
-python scripts/ssh_skill.py tunnel start example-host --remote-port 5432
+<VENV_PYTHON> scripts/ssh_skill.py doctor --json
+<VENV_PYTHON> scripts/ssh_skill.py config list-servers
+<VENV_PYTHON> scripts/ssh_skill.py exec example-host "uname -a"
+<VENV_PYTHON> scripts/ssh_skill.py upload example-host ./app.tar.gz /tmp/app.tar.gz
+<VENV_PYTHON> scripts/ssh_skill.py download example-host /var/log/app.log ./app.log
+<VENV_PYTHON> scripts/ssh_skill.py transfer source-host /data/file destination-host /backup/file
+<VENV_PYTHON> scripts/ssh_skill.py tunnel start example-host --remote-port 5432
 ```
 
 完整参数见 [references/commands.md](references/commands.md)。
@@ -93,13 +120,13 @@ python scripts/ssh_skill.py tunnel start example-host --remote-port 5432
 先预览，不建立 SSH 连接：
 
 ```text
-python scripts/ssh_skill.py cluster "uptime" --environment production
+<VENV_PYTHON> scripts/ssh_skill.py cluster "uptime" --environment production
 ```
 
 确认目标后执行：
 
 ```text
-python scripts/ssh_skill.py cluster "uptime" --environment production --apply --confirm-production
+<VENV_PYTHON> scripts/ssh_skill.py cluster "uptime" --environment production --apply --confirm-production
 ```
 
 不要从筛选条件推测实际范围；执行前检查结果中的 `targets`、`target_count` 和
@@ -158,22 +185,22 @@ ASCII-safe 的 JSONL 写入 stderr，不得与 stdout 结果合并。
 这些帮助命令不连接服务器，并由测试自动执行：
 
 ```text
-python scripts/ssh_skill.py --help
-python scripts/ssh_skill.py exec --help
-python scripts/ssh_skill.py upload --help
-python scripts/ssh_skill.py download --help
-python scripts/ssh_skill.py transfer --help
-python scripts/ssh_skill.py cluster --help
-python scripts/ssh_skill.py config --help
-python scripts/ssh_skill.py tunnel --help
-python scripts/ssh_skill.py daemon --help
-python scripts/ssh_skill.py doctor --help
+<VENV_PYTHON> scripts/ssh_skill.py --help
+<VENV_PYTHON> scripts/ssh_skill.py exec --help
+<VENV_PYTHON> scripts/ssh_skill.py upload --help
+<VENV_PYTHON> scripts/ssh_skill.py download --help
+<VENV_PYTHON> scripts/ssh_skill.py transfer --help
+<VENV_PYTHON> scripts/ssh_skill.py cluster --help
+<VENV_PYTHON> scripts/ssh_skill.py config --help
+<VENV_PYTHON> scripts/ssh_skill.py tunnel --help
+<VENV_PYTHON> scripts/ssh_skill.py daemon --help
+<VENV_PYTHON> scripts/ssh_skill.py doctor --help
 ```
 
 运行全部测试：
 
 ```text
-python -m unittest discover -s tests -v
+<VENV_PYTHON> -m unittest discover -s tests -v
 ```
 
 v4.0.0 当前发布基线：`115 tests passed`。

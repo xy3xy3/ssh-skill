@@ -43,6 +43,34 @@ best-effort only and are not release gates.
 The v4.0.0 release baseline is 115 offline tests, verified by GitHub Actions on
 Windows, macOS, Ubuntu, and Python 3.10-3.13.
 
+## Python Environment and Dependencies
+
+Use a project-local virtual environment so the system interpreter and user
+site-packages remain untouched. Prefer `uv`:
+
+```bash
+uv venv .venv
+uv pip install --python .venv/bin/python paramiko
+```
+
+If `uv` is unavailable, use Python's built-in `venv`:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install paramiko
+```
+
+On Windows, use `.venv\\Scripts\\python.exe` as the interpreter path. Use the
+virtual-environment interpreter for all subsequent commands, for example:
+
+```bash
+.venv/bin/python scripts/ssh_skill.py doctor --json
+```
+
+Never run a bare `pip install` or install dependencies globally. If neither
+`uv` nor `venv` is available, report the prerequisite and stop instead of
+falling back to the global interpreter.
+
 ## Skill Root
 
 Treat the directory containing the [loaded SKILL.md](SKILL.md) as
@@ -64,15 +92,15 @@ the root once per task; do not run doctor before each operation.
 Windows PowerShell:
 
 ```powershell
-python "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" doctor --json
-python "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" exec example-host "hostname"
+.venv\Scripts\python.exe "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" doctor --json
+.venv\Scripts\python.exe "<SSH_SKILL_ROOT>\scripts\ssh_skill.py" exec example-host "hostname"
 ```
 
 macOS / Linux:
 
 ```bash
-python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" doctor --json
-python3 "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" exec example-host "hostname"
+.venv/bin/python "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" doctor --json
+.venv/bin/python "<SSH_SKILL_ROOT>/scripts/ssh_skill.py" exec example-host "hostname"
 ```
 
 Remote paths remain POSIX paths on all three systems. Do not add a local shell
@@ -83,13 +111,13 @@ wrapper.
 These examples assume the current directory is the source root:
 
 ```text
-python scripts/ssh_skill.py doctor --json
-python scripts/ssh_skill.py config list-servers
-python scripts/ssh_skill.py exec example-host "uname -a"
-python scripts/ssh_skill.py upload example-host ./app.tar.gz /tmp/app.tar.gz
-python scripts/ssh_skill.py download example-host /var/log/app.log ./app.log
-python scripts/ssh_skill.py transfer source-host /data/file destination-host /backup/file
-python scripts/ssh_skill.py tunnel start example-host --remote-port 5432
+<VENV_PYTHON> scripts/ssh_skill.py doctor --json
+<VENV_PYTHON> scripts/ssh_skill.py config list-servers
+<VENV_PYTHON> scripts/ssh_skill.py exec example-host "uname -a"
+<VENV_PYTHON> scripts/ssh_skill.py upload example-host ./app.tar.gz /tmp/app.tar.gz
+<VENV_PYTHON> scripts/ssh_skill.py download example-host /var/log/app.log ./app.log
+<VENV_PYTHON> scripts/ssh_skill.py transfer source-host /data/file destination-host /backup/file
+<VENV_PYTHON> scripts/ssh_skill.py tunnel start example-host --remote-port 5432
 ```
 
 See [references/commands.md](references/commands.md) for full syntax.
@@ -99,13 +127,13 @@ See [references/commands.md](references/commands.md) for full syntax.
 Preview without opening an SSH connection:
 
 ```text
-python scripts/ssh_skill.py cluster "uptime" --environment production
+<VENV_PYTHON> scripts/ssh_skill.py cluster "uptime" --environment production
 ```
 
 Apply after reviewing the targets:
 
 ```text
-python scripts/ssh_skill.py cluster "uptime" --environment production --apply --confirm-production
+<VENV_PYTHON> scripts/ssh_skill.py cluster "uptime" --environment production --apply --confirm-production
 ```
 
 Do not infer actual scope from filters. Review `targets`, `target_count`, and
@@ -167,22 +195,22 @@ behavior.
 These help commands make no server connection and are executed by tests:
 
 ```text
-python scripts/ssh_skill.py --help
-python scripts/ssh_skill.py exec --help
-python scripts/ssh_skill.py upload --help
-python scripts/ssh_skill.py download --help
-python scripts/ssh_skill.py transfer --help
-python scripts/ssh_skill.py cluster --help
-python scripts/ssh_skill.py config --help
-python scripts/ssh_skill.py tunnel --help
-python scripts/ssh_skill.py daemon --help
-python scripts/ssh_skill.py doctor --help
+<VENV_PYTHON> scripts/ssh_skill.py --help
+<VENV_PYTHON> scripts/ssh_skill.py exec --help
+<VENV_PYTHON> scripts/ssh_skill.py upload --help
+<VENV_PYTHON> scripts/ssh_skill.py download --help
+<VENV_PYTHON> scripts/ssh_skill.py transfer --help
+<VENV_PYTHON> scripts/ssh_skill.py cluster --help
+<VENV_PYTHON> scripts/ssh_skill.py config --help
+<VENV_PYTHON> scripts/ssh_skill.py tunnel --help
+<VENV_PYTHON> scripts/ssh_skill.py daemon --help
+<VENV_PYTHON> scripts/ssh_skill.py doctor --help
 ```
 
 Run the complete suite:
 
 ```text
-python -m unittest discover -s tests -v
+<VENV_PYTHON> -m unittest discover -s tests -v
 ```
 
 Current v4.0.0 release baseline: `115 tests passed`.
